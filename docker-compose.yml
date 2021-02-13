@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mysql:
+    container_name: dbmysql
+    image: mysql
+    environment:
+    - MYSQL_DATABASE=macapa
+    - MYSQL_USER=admin
+    - MYSQL_PASSWORD=admin
+    - MYSQL_ROOT_PASSWORD=mercaFacil
+    - MYSQL_ROOT_HOST=%
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+
+  postgresql:
+    container_name: dbpostgres
+    image: postgres
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"  
+    environment:
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_USER: "admin"
+
+  api:
+    container_name: "api"
+    build: "./"
+    ports:
+      - "3333:3333"
+    command: npm start
+    depends_on:
+      - mysql
+      - postgresql
