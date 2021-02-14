@@ -1,0 +1,5 @@
+CREATE DATABASE auth;
+
+SELECT pg_sleep(5);
+
+CREATE DATABASE varejao;

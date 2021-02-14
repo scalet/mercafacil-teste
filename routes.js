@@ -5,6 +5,7 @@ const Auth = require('./app/middleware/authorization')
 const ContactController = require('./app/controller/ContactController');
 const LoginController   = require('./app/controller/LoginController');
 
+routes.post('/system/init', LoginController.init);
 
 routes.get('/contact/macapa',  Auth.verifyJWT, ContactController.listMacapa);
 routes.post('/contact/macapa', Auth.verifyJWT, ContactController.saveMacapa);

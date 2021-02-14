@@ -1,5 +1,0 @@
-CREATE DATABASE varejao;
-
-USE varejao;
-
-CREATE DATABASE auth;

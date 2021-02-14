@@ -4,6 +4,8 @@ services:
   mysql:
     container_name: dbmysql
     image: mysql
+    volumes:
+    - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/setup.sql
     environment:
     - MYSQL_DATABASE=macapa
     - MYSQL_USER=admin
@@ -18,7 +20,7 @@ services:
     container_name: dbpostgres
     image: postgres
     volumes:
-    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    - ./docker/postgres-auth-init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"  
     environment:

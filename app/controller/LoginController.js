@@ -4,12 +4,26 @@ const jwt = require('jsonwebtoken');
 
 module.exports = {
 
+  async init (req,res) {
+    const {token} = req.body;
+
+    console.log(process.env.DB_INIT_HASH);
+    if (token == process.env.DB_INIT_HASH) {
+      require('./../../db-init');
+
+      return res.status(200).json({msg: "olha a gambi"});
+
+      process.env.DB_INIT_HASH = Date.now();
+      console.log(process.env.DB_INIT_HASH);
+
+    } else {
+      return res.status(401).json();
+    }
+  },
+
   async index(req,res) {
 
     const {email, pass} = req.body;
-
-
-    console.log(email, pass);
 
     if (email == '' || pass == '') {
       return res.status(401).json({error:"Missing email or password"});
@@ -20,6 +34,8 @@ module.exports = {
       email: email,
       pass:  pass
     }).select('id');
+
+    
 
     //retorna erro se nao encontrar o usuario
     if (!id) {
