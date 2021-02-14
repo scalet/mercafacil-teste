@@ -28,6 +28,8 @@ Especificações do Cliente VareJão:
 
 A criação de um ambiente de testes usando Docker para simular o banco de dados do cliente é altamente recomendada. A solução poderá ser desenvolvida em Golang ou Node.js. Fique livre para desenhar a solução da maneira que achar mais conveniente e supor qualquer cenário que não foi abordado nas especificações acima. Se, por qualquer motivo, você não consiga completar este teste, recomendamos que nos encaminhe o que foi desenvolvido de qualquer maneira. A falta de cumprimento de alguns dos requisitos aqui descritos não implica necessariamente na desconsideração do candidato.
 
+***
+***
 
 ## Pré-requisitos
 [Docker](https://www.docker.com/)
@@ -41,34 +43,49 @@ A criação de um ambiente de testes usando Docker para simular o banco de dados
 O projeto está utilizando containers em docker, para executar o projeto corretamente devemos subir os containers.
 São três containers: API (NodeJS), MySQL e PostgresQL; 
 
-`docker-compose up -d --build`
+````
+docker-compose up -d --build
+````
 
 ### Criação das tabelas no postgres
-Por conta da falta de tempo, e pouca experiência em Node e docker, eu montei um end point para criar as tabelas que não estavam funcionando para o Postgres.
-Portanto para funcionar corretamente é necessário consumir este end point `localhost:3333/system/init` via POST enviando a variável `{"token": "48C3A86515BDD197AE727083EF199BE7A852C75E59A79DC3DA1A6A510133419E"}`
-Este comando executará o arquivo db-init.
-
-Após a execução do system/init será possível consumir os end points:
+Por conta da falta de tempo, e pouca experiência em Node e docker, acabei desenvolvendo um end point para criar as tabelas que não estavam funcionando para o Postgres.
+Portanto para funcionar corretamente é necessário consumir este end point  via POST enviando a variável
+Este comando executará o arquivo db-init e de preferência deve ser utilizado apenas uma vez.
+```
+POST
+http://localhost:3333/system/init
+Body: {
+  "token": "48C3A86515BDD197AE727083EF199BE7A852C75E59A79DC3DA1A6A510133419E"
+}
+```
+Após a execução do system/init será possível consumir os end points.
+A API ficará disponível na porta 3333 -> http://locahost:3333
+***
+***
 
 ## ENDPOINTS
-Login
 
-- POST /login
-Retorna o token para utilização nos end points
-Os tokens devem ser enviados via Auth Bearer no header da aplicação
 
-- POST /contact/macapa
-Grava os contatos do cliente macapa 
+### http://localhost:3333/login | POST
+- Retorna o token para utilização nos end points
+- O token retornado será utilizado via Auth Bearer no header dos próximos end points.
+- O cliente Macapá não conseguirá visualizar a lista do cliente Varejão e vice-versa
 
-- GET /contact/macapa
-Listar os registros do cliente macapa
+### http://localhost:3333/contact/macapa | GET
+- Listar os registros do cliente macapa
+### http://localhost:3333/contact/macapa | POST
+- Grava os contatos do cliente macapa 
 
-- POST /contact/varejao
-Grava os contatos do cliente varejao
-
-GET /contact/varejao
+### http://localhost:3333/contact/varejao | GET
 - Listar os registros do cliente varejao
 
+### http://localhost:3333/contact/varejao | POST
+- Grava os contatos do cliente varejao
+
+
+
+
+***
 ***
 ## LOGIN E JWT TOKEN
 
@@ -80,20 +97,50 @@ senha: varejao
 email: macapa@mercafacil.com.br 
 senha: macapa
 
+
 ### Exemplo
 
 POST http://localhost:3333/login
 
-enviar JSON no corpo da requisição, exemplo:
-`
+Enviar JSON no corpo da requisição, exemplo:
+```
 {
   "email":"macapa@mercafacil.com.br",
   "pass":"macapa"
 }
-`
-API ira retornar o JWT Token, exemplo de retorno:
-`
+```
+
+API retornará o Token, exemplo de retorno:
+```
 {
   "auth": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJpYXQiOjE2MDUxOTYxOTMsImV4cCI6MTYwNTE5NjQ5M30.G8_hBf4C75kqWItaemnw3erkpYy6qeaSv6qFeDjija4"
 }
+```
+
+API Lista contatos macapa
+```
+GET
+Host: localhost:3333/contact/macapa
+Header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJpYXQiOjE2MDUxOTYxOTMsImV4cCI6MTYwNTE5NjQ5M30.G8_hBf4C75kqWItaemnw3erkpYy6qeaSv6qFeDjija4
+```
+
+API Envia contatos macapa
+```
+POST
+Host: localhost:3333/contact/macapa
+Header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJpYXQiOjE2MDUxOTYxOTMsImV4cCI6MTYwNTE5NjQ5M30.G8_hBf4C75kqWItaemnw3erkpYy6qeaSv6qFeDjija4
+Body: 
+{
+    "contacts": [
+      {
+        "name": "Marina Rodrigues",
+        "cellphone": "5541996941919"
+      },
+      {
+        "name": "Nicolas Rodrigues",
+        "cellphone": "5541954122723"
+      }
+    ]
+}  
+```
